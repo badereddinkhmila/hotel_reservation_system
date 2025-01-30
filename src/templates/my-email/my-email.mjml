@@ -1,0 +1,95 @@
+<mjml>
+  <mj-head>
+    <!-- head section -->
+  </mj-head>
+
+  <mj-body width="800px">
+    <!-- Header section -->
+    <mj-section background-color="#ffffff">
+      <mj-column>
+        <!-- Company logo image -->
+        <mj-image width="150px" src="https://res.cloudinary.com/devwm/image/upload/v1702041211/Articles/MJML%20email/c9cuclgaag3razkqa8eg.png" />
+        <!-- Divider -->
+        <mj-divider border-color="#FF3131"></mj-divider>
+      </mj-column>
+    </mj-section>
+
+    <!-- Content section -->
+    <mj-wrapper padding-top="0" padding-bottom="0" css-class="body-section">
+      <mj-section background-color="#ffffff" padding-left="15px" padding-right="15px">
+        <mj-column width="100%">
+          <!-- Introductory text -->
+          <mj-text mj-class="head-text">
+            eureka!
+          </mj-text>
+          <mj-text font-weight="bold" padding-bottom="15px">
+            Hello {{name}},
+          </mj-text>
+
+          <!-- Banner image -->
+          <mj-image src="https://res.cloudinary.com/devgrow/image/upload/v1701788453/weup/email_template/tb4xfxzjjgcmitdbpntq.png" width="350px" alt="banner" padding="15px" />
+
+          <!-- Content text -->
+          <mj-text>
+            👍🏻 I hope everything is going well. I've been following your work at {{company}} and I'm impressed by {{message}}.
+          </mj-text>
+
+          <mj-text>
+            🤖 My team and I are working on an exciting marketing project and we believe your experience would be invaluable to us. We would love it if you could take a few minutes to complete this brief survey.
+          </mj-text>
+
+          <!-- Button -->
+          <mj-button href={{link}}>
+            Survey
+          </mj-button>
+
+          <mj-text>
+            🎁 As a thank you, not only will you have the chance to win a gift, but we would also be delighted to share the key findings of the study with you, which could offer some useful insights for your own work.
+          </mj-text>
+
+          <mj-text>
+            🎟️ The draw will take place on 24/12/2023, and we will contact the winner directly.
+            <br /><br />
+            Thank you for considering our request. We are eager to hear your valuable opinion.
+            <br /><br />
+            Best regards,
+          </mj-text>
+        </mj-column>
+      </mj-section>
+
+      <!-- Image section -->
+      <mj-section padding-left="15px" padding-right="15px" padding-top="0" background-color="#ffffff">
+        <mj-column width="50%" padding="20px">
+          <!-- Image -->
+          <mj-image border="" align="center" src="https://res.cloudinary.com/devwm/image/upload/v1702041217/Articles/MJML%20email/tmgqcttn1k2aot222stb.png" />
+        </mj-column>
+        <mj-column width="20%">
+          <!-- Image -->
+          <mj-image align="center" src="https://res.cloudinary.com/devwm/image/upload/v1702041403/Articles/MJML%20email/upsnbwuwrg5ah1levbns.png" padding-top="50px" />
+        </mj-column>
+      </mj-section>
+
+      <!-- Footer section -->
+      <mj-section>
+        <mj-column width="100%" padding="0">
+          <!-- Social icons -->
+          <mj-social font-size="15px" icon-size="30px" mode="horizontal" padding="0" align="center">
+            <mj-social-element name="facebook" href="#" mj-class="social-bg"></mj-social-element>
+            <mj-social-element name="google" href="#" mj-class="social-bg"></mj-social-element>
+            <mj-social-element name="linkedin" href="#" mj-class="social-bg"></mj-social-element>
+          </mj-social>
+
+          <!-- Contact information -->
+          <mj-text color="#445566" font-size="11px" align="center" line-height="16px">
+            If you have any questions regarding this email or any related queries, you can contact us at <a href="contact@weup.ai">contact@weup.ai</a>
+          </mj-text>
+
+          <!-- Copyright -->
+          <mj-text color="#445566" font-size="11px" align="center" line-height="16px">
+            &copy; WeUp, All Rights Reserved.
+          </mj-text>
+        </mj-column>
+      </mj-section>
+    </mj-wrapper>
+  </mj-body>
+</mjml>
