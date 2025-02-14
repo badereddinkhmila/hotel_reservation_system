@@ -2,12 +2,14 @@ import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 import { RoleEntity } from './role.entity';
 import {
   IsEmail,
+  IsEnum,
   IsNotEmpty,
   IsStrongPassword,
   MinLength,
 } from 'class-validator';
 import BaseEntity from 'src/intranet/common/base-entity';
 import { AutoMap } from '@automapper/classes';
+import { AuthProvidersEnum } from 'src/utils/authentification/enum/auth-providers.enum';
 
 @Entity({ name: 'users' })
 export class UserEntity extends BaseEntity {
@@ -69,6 +71,20 @@ export class UserEntity extends BaseEntity {
   })
   @AutoMap()
   isVerified: boolean;
+
+  @Column({
+    type: 'text',
+  })
+  @IsEnum(AuthProvidersEnum)
+  @AutoMap()
+  provider: string;
+
+  @Column({
+    name: 'social_id',
+    type: 'varchar',
+    nullable: true,
+  })
+  socialId: string;
 
   /*###############################################################*/
   /*#####################    Relationships    #####################*/

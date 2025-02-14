@@ -43,9 +43,10 @@ async function bootstrap() {
 
   // Global exception filter
   app.useGlobalFilters(new ExceptionInterceptor());
+  app.enableCors({ origin: '*' });
 
   await app.startAllMicroservices();
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(process.env.APP_PORT ?? 3000);
 
   if (module.hot) {
     module.hot.accept();

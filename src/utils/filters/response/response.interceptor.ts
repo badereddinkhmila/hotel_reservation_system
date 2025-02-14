@@ -59,6 +59,8 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, Response<T>> {
         return 'Resource deleted successfully';
       case HttpStatus.BAD_REQUEST:
         return 'Bad request';
+      case HttpStatus.GONE:
+        return 'Resource removed permanently';
       case HttpStatus.UNAUTHORIZED:
         return 'Unauthorized';
       case HttpStatus.FORBIDDEN:

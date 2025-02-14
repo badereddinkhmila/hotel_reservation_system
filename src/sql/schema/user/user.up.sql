@@ -6,15 +6,19 @@ create table users (
     internal_id uuid primary key not null default gen_random_uuid(),
     firstname varchar(32),
     lastname varchar(32) not null,
-    email varchar(100) unique not null,
-    password varchar(255) not null,
+    email varchar(100) unique,
+    password varchar(255),
     is_active boolean default true,
     is_verified boolean default false,
+    provider text not null,
+    social_id varchar(255),
     created_at timestamp default now(),
     updated_at timestamp,
     deleted_at timestamp
 );
 create index users_email on users(email);
+create index users_provider on users(provider);
+create index users_social_id on users(social_id);
 create index users_created_at on users(created_at);
 create index users_updated_at on users(updated_at);
 create index users_deleted_at on users(deleted_at);

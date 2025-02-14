@@ -34,6 +34,8 @@ export default () => ({
     forgotExpiry: process.env.AUTH_FORGOT_TOKEN_EXPIRES_IN,
     confirmKey: process.env.AUTH_CONFIRM_EMAIL_SECRET,
     confirmExpiry: process.env.AUTH_CONFIRM_EMAIL_TOKEN_EXPIRES_IN,
+    googleClientId: process.env.AUTH_GOOGLE_CLIENT_ID,
+    googleClientSecret: process.env.AUTH_GOOGLE_CLIENT_SECRET,
   },
   mailer: {
     service: process.env.MAILER_SERVICE,

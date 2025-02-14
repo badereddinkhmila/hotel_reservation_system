@@ -15,6 +15,7 @@ import { RefreshTokenGuard } from './authentification/jwt/guards/refresh-token.g
 import { MailerService } from './mailer/mailer.service';
 import { TemplateService } from './mailer/template.service';
 import { NatsService } from './nats/nats.service';
+import { AuthGoogleService } from './authentification/google/authGoogle.service';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { NatsService } from './nats/nats.service';
     SqlReader,
     SessionService,
     AuthentificationService,
+    AuthGoogleService,
     JwtStrategy,
     JwtRefreshStrategy,
     TokenGuard,
@@ -41,6 +43,7 @@ import { NatsService } from './nats/nats.service';
     EncryptionService,
     SqlReader,
     AuthentificationService,
+    AuthGoogleService,
     JwtStrategy,
     JwtRefreshStrategy,
     TokenGuard,

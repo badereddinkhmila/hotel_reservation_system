@@ -19,6 +19,10 @@ import { EmailConfirmation } from './types/email-confirmation';
 import { MailerService } from '../mailer/mailer.service';
 import { UserReadDTO } from 'src/intranet/user/dto/user-read.dto';
 import { NatsService } from 'src/utils/nats/nats.service';
+import { AuthProvidersEnum } from './enum/auth-providers.enum';
+import SocialInterface from './types/social-interface';
+import { UserEntity } from 'src/intranet/user/model/user.entity';
+import { UserRepository } from 'src/intranet/user/repository/user.repository';
 
 @Injectable()
 export class AuthentificationService {
@@ -31,6 +35,7 @@ export class AuthentificationService {
     private sessionService: SessionService,
     private mailerService: MailerService,
     @Inject() private natsService: NatsService,
+    @Inject() private readonly userRepository: UserRepository,
   ) {}
 
   registerUser = async ({
@@ -107,14 +112,15 @@ export class AuthentificationService {
       });
     }
 
-    // if (user.provider !== AuthProvidersEnum.email) {
-    //   throw new UnprocessableEntityException({
-    //     status: HttpStatus.UNPROCESSABLE_ENTITY,
-    //     errors: {
-    //       email: `needLoginViaProvider:${user.provider}`,
-    //     },
-    //   });
-    // }
+    if (user.provider !== AuthProvidersEnum.email) {
+      throw new UnprocessableEntityException({
+        status: HttpStatus.UNPROCESSABLE_ENTITY,
+        errors: {
+          email: `needLoginViaProvider:${user.provider}`,
+        },
+      });
+    }
+
     if (!user.password) {
       throw new UnprocessableEntityException({
         status: HttpStatus.UNPROCESSABLE_ENTITY,
@@ -134,6 +140,88 @@ export class AuthentificationService {
         status: HttpStatus.UNPROCESSABLE_ENTITY,
         errors: {
           password: 'incorrectPassword',
+        },
+      });
+    }
+
+    const hash = crypto
+      .createHash('sha256')
+      .update(crypto.randomBytes(32).toString('hex'))
+      .digest('hex');
+
+    const session = {
+      id: await this.encryptionService.encryptValue(user.internalId),
+      user: user,
+      roles: user.roles,
+      views: ['All'],
+      hash,
+      permissions: ['All'],
+      lastSeen: new Date(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    } as Session;
+
+    await this.sessionService.createSession(session);
+
+    const { token: accessToken, refreshToken } = await this.getTokensData({
+      sessionId: session.id,
+      hash,
+    });
+
+    return {
+      refreshToken,
+      accessToken,
+    };
+  }
+
+  async validateSocialLogin(
+    authProvider: string,
+    socialData: SocialInterface,
+  ): Promise<LoginResponseDto> {
+    let user: UserEntity | null = null;
+    const socialEmail = socialData.email?.toLowerCase();
+    let userByEmail: UserEntity | null = null;
+
+    if (socialEmail) {
+      userByEmail = await this.usersService.findByEmail(socialEmail);
+    }
+
+    if (socialData.id) {
+      user = await this.usersService.findBySocialIdAndProvider({
+        socialId: socialData.id,
+        provider: authProvider as AuthProvidersEnum,
+      });
+    }
+
+    if (user) {
+      if (socialEmail && !userByEmail) {
+        user.email = socialEmail;
+      }
+      const roles = user.roles;
+      delete user.roles;
+      await this.userRepository.update({ internalId: user.internalId }, user);
+      user.roles = roles;
+    } else if (userByEmail) {
+      user = userByEmail;
+    } else if (socialData.id) {
+      user = await this.usersService.registerSocialUser({
+        email: socialEmail ?? null,
+        firstname: socialData.firstname ?? null,
+        lastname: socialData.lastname ?? null,
+        socialId: socialData.id,
+        provider: authProvider as AuthProvidersEnum,
+      });
+      user = await this.userRepository.findOne({
+        where: { internalId: user.internalId },
+        relations: { roles: true },
+      });
+    }
+
+    if (!user) {
+      throw new UnprocessableEntityException({
+        status: HttpStatus.UNPROCESSABLE_ENTITY,
+        errors: {
+          user: 'userNotFound',
         },
       });
     }

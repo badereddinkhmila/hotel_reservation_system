@@ -1,4 +1,3 @@
-import { ConfigService } from '@nestjs/config';
 import {
   Body,
   Controller,
@@ -22,14 +21,18 @@ import { LoginResponseDto } from 'src/utils/authentification/dto/login-response.
 import { TokenGuard } from 'src/utils/authentification/jwt/guards/token.guard';
 import { RefreshTokenGuard } from 'src/utils/authentification/jwt/guards/refresh-token.guard';
 import { MessagePattern, Payload } from '@nestjs/microservices';
+import { AuthGoogleService } from 'src/utils/authentification/google/authGoogle.service';
+import { AuthProvidersEnum } from 'src/utils/authentification/enum/auth-providers.enum';
 
-@Controller()
+@Controller({
+  //  version: '1',
+})
 export class AuthentificationController {
   private readonly logger = new Logger(AuthentificationController.name);
   constructor(
-    private readonly configService: ConfigService,
     @Inject() private readonly userService: UserService,
     @Inject() private readonly authService: AuthentificationService,
+    @Inject() private readonly authGoogleService: AuthGoogleService,
   ) {}
 
   @Post('signin')
@@ -49,6 +52,19 @@ export class AuthentificationController {
     const response = await this.userService.registerNewUser(userCreateDTO);
     await this.authService.registerUser(response);
     return response;
+  }
+
+  @Post('signup/google')
+  async signupGoogle(
+    @Body() body: { googleAccessToken: string },
+  ): Promise<LoginResponseDto> {
+    const userData = await this.authGoogleService.getUserProfile(
+      body.googleAccessToken,
+    );
+    return await this.authService.validateSocialLogin(
+      AuthProvidersEnum.google,
+      userData,
+    );
   }
 
   @Get('me')

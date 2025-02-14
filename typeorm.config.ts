@@ -7,11 +7,11 @@ const configService = new ConfigService();
 
 const AppDataSource = new DataSource({
   type: 'postgres',
-  host: configService.get('DB_HOST'),
-  port: configService.get<number>('DB_PORT') || 5432,
-  database: configService.get('DB_DATABASE'),
-  username: configService.get('DB_USERNAME'),
-  password: configService.get<string>('DB_PASSWORD'),
+  host: configService.getOrThrow('DB_HOST'),
+  port: configService.get('DB_PORT') || 5432,
+  database: configService.getOrThrow('DB_DATABASE'),
+  username: configService.getOrThrow('DB_USERNAME'),
+  password: configService.getOrThrow('DB_PASSWORD'),
   synchronize: false,
   migrations: ['src/sql/migrations/*.ts'],
   migrationsRun: false,

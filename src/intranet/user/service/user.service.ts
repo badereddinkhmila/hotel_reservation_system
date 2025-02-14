@@ -1,3 +1,4 @@
+import { AuthProvidersEnum } from './../../../utils/authentification/enum/auth-providers.enum';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { UserRepository } from 'src/intranet/user/repository/user.repository';
 import { UserCreateDTO } from 'src/intranet/user/dto/user-create.dto';
@@ -9,6 +10,7 @@ import { RoleName } from '../enum/role.enum';
 import { InjectMapper } from '@automapper/nestjs';
 import { UserEntity } from '../model/user.entity';
 import { Mapper } from '@automapper/core';
+import { UserCreateSocialDTO } from '../dto/user-create-social.dto';
 
 @Injectable()
 export class UserService {
@@ -31,7 +33,9 @@ export class UserService {
       const role = await this.roleRepository.findOne({
         where: { roleName: RoleName.SUPER_ADMIN },
       });
+      userCreateDTO.email = userCreateDTO.email.toLowerCase();
       let user = this.userRepository.create({
+        provider: AuthProvidersEnum.email,
         ...userCreateDTO,
         roles: [role],
       });
@@ -44,6 +48,26 @@ export class UserService {
     }
   }
 
+  async registerSocialUser(
+    socialUserDto: UserCreateSocialDTO,
+  ): Promise<UserEntity> {
+    try {
+      const role = await this.roleRepository.findOne({
+        where: { roleName: RoleName.USER },
+      });
+      socialUserDto.email = socialUserDto.email.toLowerCase();
+      const user = this.userRepository.create({
+        ...socialUserDto,
+        isActive: true,
+        isVerified: true,
+        roles: [role],
+      });
+      return await this.userRepository.save(user);
+    } catch (error) {
+      this.logger.error('[UserService]: Fn: signup: ', error);
+      throw error;
+    }
+  }
   async getById(externalId: string): Promise<UserReadDTO> {
     try {
       await this.queryRunner.startTransaction();
@@ -108,6 +132,46 @@ export class UserService {
     } catch (error) {
       this.logger.error('[UserService]: Fn: updateById: ', error);
       await this.queryRunner.rollbackTransaction();
+      throw error;
+    }
+  }
+
+  async findBySocialIdAndProvider({
+    socialId,
+    provider,
+  }: {
+    socialId: string;
+    provider: AuthProvidersEnum;
+  }): Promise<UserEntity | null> {
+    try {
+      return await this.userRepository.findOne({
+        where: {
+          socialId,
+          provider,
+        },
+        relations: { roles: true },
+      });
+    } catch (error) {
+      this.logger.error(
+        '[UserService]: Fn: findBySocialIdAndProvider: ',
+        error,
+      );
+      throw error;
+    }
+  }
+  async findByEmail(email: string): Promise<UserEntity | null> {
+    try {
+      return await this.userRepository.findOne({
+        where: {
+          email,
+        },
+        relations: { roles: true },
+      });
+    } catch (error) {
+      this.logger.error(
+        '[UserService]: Fn: findBySocialIdAndProvider: ',
+        error,
+      );
       throw error;
     }
   }
