@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis
+    container_name: your_container_name
+    ports:
+      - '6379:6379'
+    command:
+      [
+        '--requirepass',
+        'your redis password',
+        '--user',
+        'your redis password on >password ~* allcommands',
+        '--user',
+        'default off nopass nocommands',
+      ]
+    restart: unless-stopped
+
+  postgres:
+    image: timescale/timescaledb:2.5.2-pg14-oss
+    container_name: your_container_name
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: your-user
+      POSTGRES_PASSWORD: your-password
+      POSTGRES_DB: your-db
+    restart: unless-stopped
+
+  nats:
+    image: bitnami/nats:2.9.16
+    container_name: your_container_name
+    ports:
+      - '4222:4222'
+      - '6222:6222'
+      - '8222:8222'
+    environment:
+      NATS_ENABLE_AUTH: 'yes'
+      NATS_USERNAME: your-user
+      NATS_PASSWORD: your-password
+      NATS_EXTRA_ARGS: '-js'
+    restart: unless-stopped
